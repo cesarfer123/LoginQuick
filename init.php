@@ -1,4 +1,5 @@
 <?php
+session_start();
 // clases cargadas automaticamente
 spl_autoload_register(function($classname){
     include "classes/". $classname . ".class.php";

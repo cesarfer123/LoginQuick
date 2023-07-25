@@ -28,31 +28,77 @@
         $arr["username"]=ucwords(trim($POST["username"]));
         $arr["email"]=trim($POST["email"]);
         $arr["password"]=$POST["password"];
-        $arr["gende"]=trim($POST["gende"]);
+        $arr["gender"]=trim($POST["gender"]);
         $arr["date"]=date("Y-m-d H:i:s");
 
         // validacion
 
-        if(empty($arr["username"]) || preg_match("/^[a-zA-z ]$/",$arr["username"])){
+        if(empty($arr["username"]) || !preg_match("/^[a-zA-z ]+$/",$arr["username"])){
             $errors[]="El usuario solo puede tener letras y espacios";
         }
 
         if(!filter_var($arr["email"],FILTER_VALIDATE_EMAIL)){
             $errors[]="Introduce un email valido";
         }
+        if(empty($arr["password"]) || strlen($arr["password"])<4){
+            $errors[]="La contraseña debe tener al menos 4 caracteres";
+        }
 
-        if($arr["gender"]== "--Select Gender--" || ($arr["gender"]!= "Female" && $arr["gender"]!="Male")){
+        if($arr["gender"] == "--Select Gender--" || ($arr["gender"]!="Female" && $arr["gender"]!="Male")){
             $errors[]="Introduce un genero valido";
         }
 
         // guardar datos
 
         if(count($errors)==0){
-            return DB::table("users")->insert($arr)->run();
+            return DB::table("users")->insert($arr);
         }
 
         return $errors;
 
+    }
+
+    public function login($POST){
+
+        $errors=array();
+
+        $arr["email"]=trim($POST["email"]);
+        $password=$POST["password"];
+
+        // leer desde la base de datos
+        $data= DB::table("users")->select()->where("email = :email",$arr);
+
+        if(is_array($data)){
+            $data=$data[0];
+            if($data->password==$password){
+                session_regenerate_id();
+                $_SESSION["USER"]["username"]=$data->username;
+                $_SESSION["USER"]["email"]=$data->email;
+                $_SESSION["USER"]["LOGGED_IN"]=1;
+                return true;
+            }
+        }
+
+        $errors[]="Email o contraseña incorrecto";
+
+        return $errors;
+
+    }
+
+
+    public function is_logged_in(){
+        if(isset($_SESSION["USER"])){
+            $email=$_SESSION["USER"]["email"];
+
+            // leer desde la base de datos
+            $data= $this->get_by_email($email);
+            if(is_array($data)){
+                return true;
+                
+            }
+        }
+
+        return false;
     }
 
 

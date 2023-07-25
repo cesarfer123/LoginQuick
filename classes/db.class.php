@@ -127,7 +127,7 @@ class DB{
     public function insert(array $values){
 
         $this->query_type="insert";
-        $this->query="inserto into " . self::$table . " (";
+        $this->query="insert into " . self::$table . " (";
         // añadiendo las columnas
         foreach ($values as $key => $value) {
             # code...
@@ -141,11 +141,11 @@ class DB{
             $this->query .=":" . $key . ",";
         }
         $this->query=trim($this->query,",");
-        $this->query=")";
+        $this->query .=")";
         // echo "<pre>";
         // print_r($this->query);
         $this->values=$values;
-        return self::$instance;
+        return $this->run($this->values);
 
     }
 

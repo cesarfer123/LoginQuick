@@ -1,3 +1,17 @@
+<?php
+    include "init.php";
+    if(count($_POST)>0){
+        // un post fue creado
+        $errors=User::action()->create($_POST);
+        if(!is_array($errors)){
+            header("Location: login.php");
+            die;
+        }
+        
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,13 +54,25 @@
         }
     </style>
     <form action="" method="post">
-        <input class="input" type="text" name="username" placeholder="Username"><br>
-        <input class="input" type="email" name="email" placeholder="Email"><br>
-        <input class="input" type="password" name="password" placeholder="Password"><br>
+        <h2>Signup</h2>
+            <div style="color: red; font-size:11px;">
+                <?php 
+                    if(isset($errors) && count($errors)>0){
+                        foreach ($errors as $error) {
+                            # code...
+                            echo $error . "<br>";
+                        }
+                    }
+                ?>
+            </div>
+        
+        <input class="input" type="text" name="username" placeholder="Username" value='<?=isset($_POST["username"]) ? $_POST["username"] : "";?>'><br>
+        <input class="input" type="email" name="email" placeholder="Email" value='<?=isset($_POST["email"]) ? $_POST["email"] : "";?>'><br>
+        <input class="input" type="password" name="password" placeholder="Password" value='<?=isset($_POST["password"]) ? $_POST["password"] : "";?>'><br>
         <select class="input" name="gender" style="max-width: 300px">
-            <option>--Select Gender--</option>
-            <option value="">Female</option>
-            <option value="">Male</option>
+            <option><?=isset($_POST["gender"]) ? $_POST["gender"] : "--Select Gender--";?></option>
+            <option>Female</option>
+            <option>Male</option>
         </select><br><br>
         <input class="btn" type="submit" name="Signup">
         <br style="clear: both;">
